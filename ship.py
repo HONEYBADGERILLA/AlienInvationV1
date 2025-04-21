@@ -10,7 +10,7 @@ class Ship:
 
 
         #Load ship and get its rect(hitbox)
-        self.image = pygame.image.load("Assets/Ship.bmp")
+        self.image = pygame.image.load(ai_game.asset_path("Ship.bmp"))
         self.rect = self.image.get_rect()
 
 
