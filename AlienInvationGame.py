@@ -21,7 +21,12 @@ class AlienInvation:
 
         self.settings=Setttings()              #settings class instance
 
-        self.screen = pygame.display.set_mode((self.settings.screen_width,self.settings.screen_height))
+        #self.screen = pygame.display.set_mode((self.settings.screen_width,self.settings.screen_height))
+
+        self.screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
+        self.settings.screen_width = self.screen.get_rect().width
+        self.settings.screen_height = self.screen.get_rect().height
+
         pygame.display.set_caption("Alien Invation")    #window title
 
         self.ship = Ship(self)              #notice the self passed is the second self ie the game ai_game
@@ -50,16 +55,41 @@ class AlienInvation:
         """respond to keypress and mouse events"""
 
         for event in pygame.event.get():
+
             if event.type == pygame.QUIT:  #cloe window with x button
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    #move ship right
-                    self.ship.moving_right = True
+                self._check_keydown_events(event)
+               
                     
             elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_RIGHT:
-                    self.ship.moving_right = False
+                self._check_keyup_events(event)      
+                
+
+
+    def _check_keydown_events(self,event):
+        """respond to key press"""
+
+        if event.key == pygame.K_RIGHT:
+            #move ship right
+            self.ship.moving_right = True
+
+        elif event.key == pygame.K_LEFT:
+            self.ship.moving_left = True
+
+        elif event.key == pygame.K_q:
+            sys.exit()
+
+
+    def _check_keyup_events(self,event):
+        """respond to key release"""
+
+        if event.key == pygame.K_RIGHT:
+            self.ship.moving_right = False
+
+        elif event.key == pygame.K_LEFT:
+            self.ship.moving_left = False
+
                 
 
 
