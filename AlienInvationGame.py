@@ -8,6 +8,8 @@ from settings import Setttings
 
 from ship import Ship
 
+from bullet import Bullet
+
 
 
 class AlienInvation:
@@ -15,6 +17,7 @@ class AlienInvation:
 
     def __init__(self):
         """initialise game and create game resources"""
+
         pygame.init()
 
         self.clock = pygame.time.Clock()       #clock object for framerae controll
@@ -30,6 +33,8 @@ class AlienInvation:
         pygame.display.set_caption("Alien Invation")    #window title
 
         self.ship = Ship(self)              #notice the self passed is the second self ie the game ai_game
+
+        self.bullets = pygame.sprite.Group()  # like a list with extra functionality
 
         self.bg_color=(180,180,180)          #a tuple fo rgb colors background color
 
@@ -47,6 +52,7 @@ class AlienInvation:
             self._check_events()
             self._update_screen()
             self.ship.update()
+            self.bullets.update()  #the sprite group will call the method on every bulled passed to it
             
             self.clock.tick(60)                    #a delay of 60th of a second or 60 times per second
 
@@ -80,6 +86,9 @@ class AlienInvation:
         elif event.key == pygame.K_q:
             sys.exit()
 
+        elif event.key == pygame.K_SPACE:
+            self._fire_bullet()
+
 
     def _check_keyup_events(self,event):
         """respond to key release"""
@@ -90,6 +99,13 @@ class AlienInvation:
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = False
 
+
+    def _fire_bullet(self):
+        """create a new bullet and add it to the group"""
+
+        new_bullet = Bullet(self)
+        self.bullets.add(new_bullet)
+
                 
 
 
@@ -98,6 +114,9 @@ class AlienInvation:
 
         self.screen.fill(self.settings.bg_color)   #fill background
         self.ship.blitme()                         #draw ship
+
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
 
         pygame.display.flip()                      #display last drawn screen
 
