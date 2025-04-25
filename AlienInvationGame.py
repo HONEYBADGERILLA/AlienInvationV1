@@ -10,6 +10,8 @@ from ship import Ship
 
 from bullet import Bullet
 
+from alien import Alien
+
 
 
 class AlienInvation:
@@ -36,6 +38,9 @@ class AlienInvation:
 
         self.bullets = pygame.sprite.Group()  # like a list with extra functionality
 
+        self.aliens = pygame.sprite.Group()
+        self._create_fleet()
+
         self.bg_color=(180,180,180)          #a tuple fo rgb colors background color
 
 
@@ -52,8 +57,9 @@ class AlienInvation:
             self._check_events()
             self._update_screen()
             self.ship.update()
-            self.bullets.update()  #the sprite group will call the method on every bulled passed to it
-            
+            self._update_bullets()  
+
+             
             self.clock.tick(60)                    #a delay of 60th of a second or 60 times per second
 
 
@@ -103,9 +109,45 @@ class AlienInvation:
     def _fire_bullet(self):
         """create a new bullet and add it to the group"""
 
-        new_bullet = Bullet(self)
-        self.bullets.add(new_bullet)
+        if len(self.bullets) < self.settings.bullets_allowed:
 
+            new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
+
+
+    def _update_bullets(self):
+        """update pos of bullets and erase old ones"""
+
+        self.bullets.update()   #the sprite group will call the method on every bulled passed to it
+
+        #get rid of bullets offscreen
+        for bullet in self.bullets.copy(): #copy because loops work with fixed list size
+            if bullet.rect.bottom <= 0 :
+                self.bullets.remove(bullet)
+
+        
+    def _create_alien(self,x_position):
+        """create an alien and place it in the row"""
+
+        new_alien = Alien(self)
+        new_alien.x = x_position
+        new_alien.rect.x = x_position
+        self.aliens.add(new_alien)
+
+
+    def _create_fleet(self):
+        """create a fleet of aliens"""
+
+        #make an alien
+        alien = Alien(self)
+        self.aliens.add(alien)
+        alien_width = alien.rect.width
+
+        current_x = alien_width
+
+        while current_x < (self.settings.screen_width - 2 * alien_width):
+            self._create_alien(current_x)
+            current_x += 2 * alien_width
                 
 
 
@@ -113,10 +155,14 @@ class AlienInvation:
         """update image on screen and flip to new screen"""
 
         self.screen.fill(self.settings.bg_color)   #fill background
-        self.ship.blitme()                         #draw ship
+        
 
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+
+        self.aliens.draw(self.screen)
+        
+        self.ship.blitme()                         #draw ship
 
         pygame.display.flip()                      #display last drawn screen
 
