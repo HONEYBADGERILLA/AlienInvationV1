@@ -18,4 +18,9 @@ class Setttings:
         self.bullet_color = (0,0,60)
         self.bullets_allowed = 5
 
+        #alien settings
+        self.alien_speed = 3.0
+        self.fleet_drop_speed = 10
+        self.fleet_direction = 1     #1 for right -1 for left for x multiplier
+
 
