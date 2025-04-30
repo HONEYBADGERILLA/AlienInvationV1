@@ -16,6 +16,8 @@ from time import sleep
 
 from game_stats import GameStats
 
+from button import Button
+
 
 
 class AlienInvation:
@@ -49,8 +51,11 @@ class AlienInvation:
 
         self.bg_color=(180,180,180)          #a tuple fo rgb colors background color
 
-        #start alien invetion in game active state flag
-        self.game_active = True
+        #start alien invation in game inactive state flag
+        self.game_active = False
+
+        #make a play button
+        self.play_button = Button(self, "Play")
 
 
     def asset_path(self,*path_parts):
@@ -90,8 +95,41 @@ class AlienInvation:
                     
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)      
-                
 
+            
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_play_button(mouse_pos)
+
+
+    def _check_play_button(self, mouse_pos):
+        """start a new game when the player clicks play"""
+
+        button_clicked = self.play_button.rect.collidepoint(mouse_pos) #check if button clicked flag, in the button area
+        if button_clicked and not self.game_active: 
+           # reset if the game inactive and not when every time the btn area clicked
+           self.settings.initialize_dynamic_settings()                  
+           self._start_game()
+
+
+    def _start_game(self):
+        """start a new game instance"""
+
+         #reset game stats give player new ships and such
+        self.stats.reset_stats()
+        self.game_active = True
+
+        #get rid of any remaining bullets and aliens
+        self.bullets.empty()
+        self.aliens.empty()
+
+        #create new fleet and center ship
+        self._create_fleet()
+        self.ship.center_ship()
+
+        #hide mouse cursor after pressing play, its reset in ship hit method
+        pygame.mouse.set_visible(False)
+                
 
     def _check_keydown_events(self,event):
         """respond to key press"""
@@ -108,6 +146,10 @@ class AlienInvation:
 
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
+
+        elif event.key == pygame.K_p:
+            if not self.game_active:
+                self._start_game()
 
 
     def _check_keyup_events(self,event):
@@ -129,7 +171,7 @@ class AlienInvation:
             self.bullets.add(new_bullet)
 
 
-    def _update_bullets(self):
+    def _update_bullets(self): 
         """update pos of bullets and erase old ones"""
 
         self.bullets.update()   #the sprite group will call the method on every bulled passed to it
@@ -141,18 +183,18 @@ class AlienInvation:
 
             self._check_bullet_alien_collitions()
 
-            if not self.aliens:
-                #Destroy existing bullets and create new fleet
-
-                self.bullets.empty()
-                self._create_fleet()
-
 
     def _check_bullet_alien_collitions(self):
         #check for any bullets that have hit aliens
         #if so get rid of the bullet and the alien
         collition = pygame.sprite.groupcollide(self.bullets, self.aliens,True,True)
 
+        if not self.aliens:
+            #Destroy existing bullets and create new fleet
+
+            self.bullets.empty()
+            self._create_fleet()
+            self.settings.increase_speed()
 
 
     def _update_aliens(self):
@@ -168,7 +210,6 @@ class AlienInvation:
 
         #look or aliens at the screen bottom
         self._check_aliens_bottom()
-
 
 
     def _ship_hit(self):
@@ -192,6 +233,8 @@ class AlienInvation:
 
         else:
             self.game_active = False
+            pygame.mouse.set_visible(True)  #reapear the cursor
+
 
     def _check_aliens_bottom(self):
         """check if any aliens got to the bottom"""
@@ -201,7 +244,7 @@ class AlienInvation:
                 #treat as if ship got hit
                 self._ship_hit()
 
-        
+
     def _create_alien(self,x_position, y_position):
         """create an alien and place it in the row"""
 
@@ -251,7 +294,6 @@ class AlienInvation:
             #finished a row: reset x and increment y values
             current_x = alien_width
             current_y += 2 * alien_height    
-                
 
 
     def _update_screen(self):
@@ -266,6 +308,9 @@ class AlienInvation:
         self.aliens.draw(self.screen)
         
         self.ship.blitme()                         #draw ship
+
+        if not self.game_active:
+            self.play_button.draw_button()
 
         pygame.display.flip()                      #display last drawn screen
 
