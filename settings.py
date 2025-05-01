@@ -20,8 +20,6 @@ class Setttings:
         #alien settings
         self.fleet_drop_speed = 10   
 
-        
-
 
         self.initialize_dynamic_settings()
 
@@ -52,6 +50,9 @@ class Setttings:
             self.speedup_scale = 1.5
 
         self.fleet_direction = 1     #1 for right -1 for left for x multiplier
+
+        #score settings
+        self.alien__points = 50
 
 
     def increase_speed(self):

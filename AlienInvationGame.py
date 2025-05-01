@@ -16,6 +16,8 @@ from time import sleep
 
 from game_stats import GameStats
 
+from scoreboard import Scoreboard
+
 from button import Button
 
 
@@ -40,7 +42,9 @@ class AlienInvation:
 
         pygame.display.set_caption("Alien Invation")    #window title
 
-        self.stats = GameStats(self)           #create instance of game statistics
+        #create an instance for statistics and scoreboard
+        self.stats = GameStats(self)
+        self.sb = Scoreboard(self)
 
         self.ship = Ship(self)              #notice the self passed is the second self ie the game ai_game
 
@@ -116,6 +120,9 @@ class AlienInvation:
         button_clicked = self.play_button.rect.collidepoint(mouse_pos) #check if button clicked flag, in the button area
         if button_clicked and not self.game_active: 
            # reset if the game inactive and not when every time the btn area clicked
+
+           self.stats.reset_stats()
+           self.sb.prep_score()
            
            self.play_pressed = True    #a flag for play button to move to diff button in update_screen
 
@@ -217,6 +224,11 @@ class AlienInvation:
         #check for any bullets that have hit aliens
         #if so get rid of the bullet and the alien
         collition = pygame.sprite.groupcollide(self.bullets, self.aliens,True,True)
+
+        if collition:
+            self.stats.score += self.settings.alien__points
+            self.sb.prep_score()
+            
 
         if not self.aliens:
             #Destroy existing bullets and create new fleet
@@ -335,6 +347,9 @@ class AlienInvation:
             bullet.draw_bullet()
 
         self.aliens.draw(self.screen)
+
+        #draw score info
+        self.sb.show_score()
         
         self.ship.blitme()                         #draw ship
 
