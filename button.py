@@ -3,7 +3,7 @@ import pygame.font
 class Button:
     """build buttons for the game"""
 
-    def __init__(self,ai_game, msg):
+    def __init__(self,ai_game, msg, position = "center"):
         
         self.screen = ai_game.screen
         self.screen_rect = self.screen.get_rect()
@@ -17,7 +17,15 @@ class Button:
 
         """build button rect obj and render it"""
         self.rect = pygame.Rect(0, 0, self.width, self.height)
-        self.rect.center = self.screen_rect.center
+
+        if position == "center":
+            self.rect.center = self.screen_rect.center
+        elif position == "right":
+            self.rect.center = self.screen_rect.center
+            self.rect.x = (self.rect.x + self.width + 60) 
+        elif position == "left":
+            self.rect.center = self.screen_rect.center
+            self.rect.x = (self.rect.x - self.width - 60) 
 
         """the button needs to be prepped only once"""
         self._prep_msg(msg)

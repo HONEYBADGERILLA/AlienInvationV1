@@ -20,20 +20,36 @@ class Setttings:
         #alien settings
         self.fleet_drop_speed = 10   
 
-        #how fast aliens speed up
-        self.speedup_scale = 1.1
+        
 
 
         self.initialize_dynamic_settings()
 
 
 
-    def initialize_dynamic_settings(self):
+    def initialize_dynamic_settings(self, difficulty=2):
         """init settins that change through the game"""
 
-        self.ship_speed = 6
-        self.bullet_speed = 8
-        self.alien_speed = 2.5
+        if difficulty==1:
+            self.ship_speed = 10
+            self.bullet_speed = 20
+            self.alien_speed = 1.5
+            #how fast aliens speed up
+            self.speedup_scale = 1.1
+
+        elif difficulty==2:
+            self.ship_speed = 6
+            self.bullet_speed = 8
+            self.alien_speed = 2.5
+            #how fast aliens speed up
+            self.speedup_scale = 1.3
+
+        elif difficulty==3:
+            self.ship_speed = 6
+            self.bullet_speed = 8
+            self.alien_speed = 5
+            #how fast aliens speed up
+            self.speedup_scale = 1.5
 
         self.fleet_direction = 1     #1 for right -1 for left for x multiplier
 

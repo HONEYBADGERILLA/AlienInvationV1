@@ -53,9 +53,13 @@ class AlienInvation:
 
         #start alien invation in game inactive state flag
         self.game_active = False
+        self.play_pressed = False
 
-        #make a play button
+        #make a play button and diff buttons
         self.play_button = Button(self, "Play")
+        self.hard_button = Button(self,"hard","right")
+        self.medium_button = Button(self, "medium")
+        self.easy_button = Button(self,"easy", "left")
 
 
     def asset_path(self,*path_parts):
@@ -99,7 +103,11 @@ class AlienInvation:
             
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                self._check_play_button(mouse_pos)
+                if not self.play_pressed:
+                    self._check_play_button(mouse_pos)
+                else:
+                    self._check_difficulty_buttons(mouse_pos)
+
 
 
     def _check_play_button(self, mouse_pos):
@@ -108,8 +116,29 @@ class AlienInvation:
         button_clicked = self.play_button.rect.collidepoint(mouse_pos) #check if button clicked flag, in the button area
         if button_clicked and not self.game_active: 
            # reset if the game inactive and not when every time the btn area clicked
-           self.settings.initialize_dynamic_settings()                  
-           self._start_game()
+           
+           self.play_pressed = True    #a flag for play button to move to diff button in update_screen
+
+
+    def _check_difficulty_buttons(self, mouse_pos):
+        """check diff buttons and init game as needed"""
+
+        easy_clicked = self.easy_button.rect.collidepoint(mouse_pos)
+        medium_clicked = self.medium_button.rect.collidepoint(mouse_pos)
+        hard_clicked = self.hard_button.rect.collidepoint(mouse_pos)
+
+        if easy_clicked or medium_clicked or hard_clicked and not self.game_active:
+            if easy_clicked:
+                self.settings.initialize_dynamic_settings(1)
+                self._start_game()
+
+            elif medium_clicked:
+                self.settings.initialize_dynamic_settings()  #2 is standart no passing arg needed
+                self._start_game()
+
+            elif hard_clicked:
+                self.settings.initialize_dynamic_settings(3)
+                self._start_game()
 
 
     def _start_game(self):
@@ -310,7 +339,12 @@ class AlienInvation:
         self.ship.blitme()                         #draw ship
 
         if not self.game_active:
-            self.play_button.draw_button()
+            if not self.play_pressed:
+                self.play_button.draw_button()
+            else:
+                self.easy_button.draw_button()
+                self.medium_button.draw_button()
+                self.hard_button.draw_button()
 
         pygame.display.flip()                      #display last drawn screen
 
