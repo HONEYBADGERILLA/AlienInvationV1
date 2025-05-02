@@ -123,6 +123,8 @@ class AlienInvation:
 
            self.stats.reset_stats()
            self.sb.prep_score()
+           self.sb.prep_level()
+           self.sb.prep_ships()
            
            self.play_pressed = True    #a flag for play button to move to diff button in update_screen
 
@@ -226,8 +228,10 @@ class AlienInvation:
         collition = pygame.sprite.groupcollide(self.bullets, self.aliens,True,True)
 
         if collition:
-            self.stats.score += self.settings.alien__points
+            for aliens in collition.values():          #make multi hit register by multiplying by number of members in dict
+                self.stats.score += self.settings.alien__points * len(aliens)
             self.sb.prep_score()
+            self.sb.check_high_score()
             
 
         if not self.aliens:
@@ -236,6 +240,10 @@ class AlienInvation:
             self.bullets.empty()
             self._create_fleet()
             self.settings.increase_speed()
+
+            #increase level
+            self.stats.level += 1
+            self.sb.prep_level()
 
 
     def _update_aliens(self):
@@ -258,8 +266,9 @@ class AlienInvation:
 
         if self.stats.ships_left >0:
 
-            #decrement ships left
+            #decrement ships left and update scoreboard dash
             self.stats.ships_left -= 1
+            self.sb.prep_ships()
 
             #get rid of sprites
             self.bullets.empty()

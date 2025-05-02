@@ -20,6 +20,9 @@ class Setttings:
         #alien settings
         self.fleet_drop_speed = 10   
 
+        #how quickly the point multiply by levelup
+        self.score_scale = 1.5
+
 
         self.initialize_dynamic_settings()
 
@@ -56,10 +59,12 @@ class Setttings:
 
 
     def increase_speed(self):
-        """increase speed settings"""
+        """increase speed settings and point values"""
 
         self.ship_speed *= self.speedup_scale
         self.bullet_speed *= self.speedup_scale
         self.alien_speed *= self.speedup_scale
+
+        self.alien__points = int(self.alien__points * self.score_scale)
 
 
