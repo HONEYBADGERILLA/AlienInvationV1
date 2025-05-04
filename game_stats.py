@@ -2,14 +2,14 @@
 class GameStats:
     """track statistics for alien invation game"""
 
-    def __init__(self,ai_game):
+    def __init__(self,ai_game , loadedscore):
         """init the stats"""
 
         self.settings = ai_game.settings
         self.reset_stats()
 
         #highscore dont never reset
-        self.high_score = 0
+        self.high_score = loadedscore
 
 
     def reset_stats(self):

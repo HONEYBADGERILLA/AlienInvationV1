@@ -20,6 +20,8 @@ from scoreboard import Scoreboard
 
 from button import Button
 
+base_dir = os.path.dirname(__file__)
+
 
 
 class AlienInvation:
@@ -42,8 +44,10 @@ class AlienInvation:
 
         pygame.display.set_caption("Alien Invation")    #window title
 
+        
         #create an instance for statistics and scoreboard
-        self.stats = GameStats(self)
+        self._loadscore()
+        self.stats = GameStats(self,self.loadedscore)
         self.sb = Scoreboard(self)
 
         self.ship = Ship(self)              #notice the self passed is the second self ie the game ai_game
@@ -69,6 +73,24 @@ class AlienInvation:
     def asset_path(self,*path_parts):
             """build path     focus folder with script this  """
             return os.path.join(os.path.dirname(__file__),"Assets",*path_parts) #focus folder on main file location, need research, * gives all sub and files
+    
+
+    def _loadscore(self):
+        #load score file
+        self.loadedscore = 0
+        self.file_path = os.path.join(base_dir, "score.txt") 
+        with open(self.file_path,"r")  as saved_score:
+            content = saved_score.read().strip()
+            content = content.replace(",","")
+            if content:
+                self.loadedscore = int(content)
+
+
+    def _savescore(self):
+        """write score to score.txt before exiting"""
+        with open(self.file_path,"w") as file:
+            file.write(str(self.stats.high_score))
+
 
 
     def run_game(self):
@@ -96,6 +118,7 @@ class AlienInvation:
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:  #cloe window with x button
+                self._savescore()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 self._check_keydown_events(event)
@@ -180,6 +203,7 @@ class AlienInvation:
             self.ship.moving_left = True
 
         elif event.key == pygame.K_q:
+            self._savescore()
             sys.exit()
 
         elif event.key == pygame.K_SPACE:
